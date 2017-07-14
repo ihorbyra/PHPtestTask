@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Message;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Requests\MessagesCreate;
 
 class MessageController extends Controller
 {
     public function index()
     {
+        Message::where([
+            ['created_at', '<', DB::raw('(NOW() - INTERVAL 1 DAY)')],
+            ['destruction', '=', 2],
+        ])->get();
+
         $data = $this->messages();
         $messages = [];
 
@@ -55,7 +62,6 @@ class MessageController extends Controller
             'diff' => $this->hoursDifference($data->id),
         ];
 
-
         return view('message', compact('message'));
     }
 
@@ -72,12 +78,14 @@ class MessageController extends Controller
 
         $date = date('Y-m-d H:i:s');
         $timeCreated = $message->created_at;
-        $interval = ( 60 - ( (strtotime($date) - strtotime($timeCreated) ) / 60 ) );
+//        $interval = ( 60 - ( (strtotime($date) - strtotime($timeCreated) ) / 60 ) );
+        $interval = ( (3600*24) - ( (strtotime($date) - strtotime($timeCreated) )) );
 
-        return round($interval, 2);
+        $t = round($interval);
+        return sprintf('%02d hours %02d minutes %02d seconds', ($t/3600),($t/60%60), $t%60);
     }
 
-    public function save(Request $request)
+    public function save(MessagesCreate $request)
     {
         $m = microtime();
 
@@ -89,7 +97,9 @@ class MessageController extends Controller
 
         $message->save();
 
-        return redirect('/');
+        $request->session()->flash('message-created', 'Message was successfully created!');
+
+        return redirect('/')->with('messageCreated');
     }
 
     public function destroyMessage($id)

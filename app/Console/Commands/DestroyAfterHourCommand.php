@@ -40,7 +40,7 @@ class DestroyAfterHourCommand extends Command
     public function handle()
     {
         return Message::where([
-            ['created_at', '<', DB::raw('(NOW() - INTERVAL 60 MINUTE)')],
+            ['created_at', '<', DB::raw('(NOW() - INTERVAL 1 DAY)')],
             ['destruction', '=', 2],
         ])->delete();
     }
