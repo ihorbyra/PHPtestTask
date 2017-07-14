@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Message;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\MessagesCreate;
 
@@ -11,11 +10,6 @@ class MessageController extends Controller
 {
     public function index()
     {
-        Message::where([
-            ['created_at', '<', DB::raw('(NOW() - INTERVAL 1 DAY)')],
-            ['destruction', '=', 2],
-        ])->get();
-
         $data = $this->messages();
         $messages = [];
 
