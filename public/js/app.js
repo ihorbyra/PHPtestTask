@@ -56,10 +56,12 @@ function showDecryptedMessage(decryptedText) {
 }
 
 function submitForm() {
+    var message = $('#message').val();
+
     var password = "SecretPassword";
     var encrypted = encrypt(message, password);
 
-    /*var message = $('#message').val();
+    /*
     var visits = $('#visits').val();
     var submitMessage = false;
     var submitVisits = false;*/
